@@ -11,6 +11,7 @@ function App() {
 
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [filter, setFilter] = useState("active")
 
   const addTodo = (e) => {
     e.preventDefault();
@@ -47,6 +48,17 @@ function App() {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
+  const getFilteredTodos = () => {
+    if (filter === "active") return todos.filter((todo) => !todo.completed);
+    if (filter === "completed") return todos.filter((todo) => todo.completed);
+    return todos;
+  };
+
+  const filteredTodos = getFilteredTodos();
+
+  const activeCount = todos.filter((todo) => !todo.completed).length;
+  const completedCount = todos.filter((todo) => todo.completed).length;
+
   return (
     <>
       <div className='app'>
@@ -56,7 +68,6 @@ function App() {
           <label htmlFor='todo-input' className='form-label'>
             新しいタスク
           </label>
-
           <input
             id='todo-input'
             type='text'
@@ -71,7 +82,28 @@ function App() {
           </button>
           {error && <p className='error-message'>{error}</p>}
         </form>
-        <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTode} />
+
+        <div className='filter-buttons'>
+          <button
+            onClick={() => setFilter("active")}
+            className={filter === "active" ? "active" : ""}
+          >
+            未完了 ({activeCount})
+          </button>
+          <button
+            onClick={() => setFilter("completed")}
+            className={filter === "completed" ? "active" : ""}
+          >
+            完了 ({completedCount})
+          </button>
+          <button
+            onClick={() => setFilter("all")}
+            className={filter === "all" ? "active" : ""}
+          >
+            すべて ({todos.length})
+          </button>
+        </div>
+        <TodoList todos={filteredTodos} onToggle={toggleTodo} onDelete={deleteTode} />
       </div>
     </>
   );
